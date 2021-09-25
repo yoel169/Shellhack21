@@ -1,0 +1,125 @@
+{
+    "storeId": "2667",
+    "name": "AutoNation Chrysler Dodge Jeep Ram Bellevue",
+    "address": {
+        "city": "Bellevue",
+        "zip": "98004",
+        "street1": "120 116th Avenue NE",
+        "street2": null,
+        "state": "WA"
+    },
+    "storeTimeZone": {
+        "zoneId": "America/Los_Angeles",
+        "gmtOffset": -7,
+        "dstSavings": 1
+    },
+    "phoneNumber": "(425) 454-8411",
+    "latitude": 47.613223,
+    "longitude": -122.184390,
+    "faxNumber": "(425) 462-0460",
+    "webAddress": "https://www.autonationchryslerdodgejeeprambellevue.com/",
+    "serviceUrl": "https://www.autonation.com/schedule-store-appointment/chrysler-dodge-jeep-ram-bellevue-wa?sc_lang=en",
+    "brands": ["Dodge","Jeep","Chrysler","Ram"],
+    "servicePhoneNumber": "425-900-5010",
+    "salesHours": [
+        {
+            "day": "MONDAY",
+            "openTime": "09:00",
+            "closeTime": "20:00"
+        },
+        {
+            "day": "TUESDAY",
+            "openTime": "09:00",
+            "closeTime": "20:00"
+        },
+        {
+            "day": "WEDNESDAY",
+            "openTime": "09:00",
+            "closeTime": "20:00"
+        },
+        {
+            "day": "THURSDAY",
+            "openTime": "09:00",
+            "closeTime": "20:00"
+        },
+        {
+            "day": "FRIDAY",
+            "openTime": "09:00",
+            "closeTime": "20:00"
+        },
+        {
+            "day": "SATURDAY",
+            "openTime": "09:00",
+            "closeTime": "20:00"
+        },
+        {
+            "day": "SUNDAY",
+            "openTime": "10:00",
+            "closeTime": "19:00"
+        }
+    ],
+    "serviceHours": [
+        {
+            "day": "MONDAY",
+            "openTime": "07:00",
+            "closeTime": "19:00"
+        },
+        {
+            "day": "TUESDAY",
+            "openTime": "07:00",
+            "closeTime": "19:00"
+        },
+        {
+            "day": "WEDNESDAY",
+            "openTime": "07:00",
+            "closeTime": "19:00"
+        },
+        {
+            "day": "THURSDAY",
+            "openTime": "07:00",
+            "closeTime": "19:00"
+        },
+        {
+            "day": "FRIDAY",
+            "openTime": "07:00",
+            "closeTime": "19:00"
+        },
+        {
+            "day": "SATURDAY",
+            "openTime": "08:00",
+            "closeTime": "17:00"
+        }
+    ],
+    "collisionHours": [
+        {
+            "day": "MONDAY",
+            "openTime": "08:00",
+            "closeTime": "18:00"
+        },
+        {
+            "day": "TUESDAY",
+            "openTime": "08:00",
+            "closeTime": "18:00"
+        },
+        {
+            "day": "WEDNESDAY",
+            "openTime": "08:00",
+            "closeTime": "18:00"
+        },
+        {
+            "day": "THURSDAY",
+            "openTime": "08:00",
+            "closeTime": "18:00"
+        },
+        {
+            "day": "FRIDAY",
+            "openTime": "08:00",
+            "closeTime": "18:00"
+        },
+        {
+            "day": "SATURDAY",
+            "openTime": "08:00",
+            "closeTime": "18:00"
+        }
+    ]
+}
