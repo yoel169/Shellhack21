@@ -156,6 +156,14 @@ def storeQueryFunction(intent_request, storeInfo):
                                 """.format(department, opening, closing)
                             }
                         )
+                
+                return elicit_slot(
+                    intent_request["sessionAttributes"],
+                    intent_request["name"],
+                    slots,
+                    "DayOfWeek",
+                    "Please state the day of week."
+                )
 
             
     return elicit_slot(
