@@ -156,14 +156,14 @@ def storeQueryFunction(intent_request, storeInfo):
                                 """.format(department, opening, closing)
                             }
                         )
+
             
-    return close(
+    return elicit_slot(
         intent_request["sessionAttributes"],
-        "Fulfilled",
-        {
-            "contentType": "PlainText",
-            "content": "There was an error processing your request."
-        }
+        intent_request["name"],
+        slots,
+        "City",
+        "Please state the city."
     )
 
 
@@ -179,7 +179,7 @@ def validateStoreHours(storeInfo):
 
     if (salesHours in storedb and
         serviceHours in storedb and
-        collisionHours in storeDB):
+        collisionHours in storedb):
         return True
     else
         return False
