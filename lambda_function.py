@@ -29,13 +29,6 @@ def get_slots(intent_request):
     """
     return intent_request["currentIntent"]["slots"]
 
-### Dialog Actions Helper Functions ###
-def get_slots(intent_request):
-    """
-    Fetch all the slots and their values from the current intent.
-    """
-    return intent_request["currentIntent"]["slots"]
-
 
 def elicit_slot(session_attributes, intent_name, slots, slot_to_elicit, message):
     """
@@ -81,10 +74,23 @@ def delegate(session_attributes, slots):
         "dialogAction": {"type": "Delegate", "slots": slots},
     }
 
+def build_validation_result(is_valid, violated_slot, message_content):
+    """
+    Define a result message structured as Lex response.
+    """
+    if message_content is None:
+        return {"isValid": is_valid, "violatedSlot": violated_slot}
+
+    return {
+        "isValid": is_valid,
+        "violatedSlot": violated_slot,
+        "message": {"contentType": "PlainText", "content": message_content},
+    }
+
 
 #-------------------------- Super Cool Function starts here ---------------------
-# Intents Handlers 
-def superCoolFunction(intent_request, storeInfo, customerdb):
+# person information intent handler
+def superCoolFunction(intent_request, customerdb):
     """
     Performs dialog management and fulfillment for selecting a store.
     """
@@ -102,7 +108,7 @@ def superCoolFunction(intent_request, storeInfo, customerdb):
 
         #get slots and validate user
         slots = get_slots(intent_request)
-        validateUserResult = validateCustomer()
+        validateUserResult = validateCustomer((first_name, last_name), customerdb)
 
         #if user is not validated
         if not validateUserResult:
@@ -117,7 +123,19 @@ def superCoolFunction(intent_request, storeInfo, customerdb):
                 validateUserResult["violatedSlot"],
                 validateUserResult["message"])
 
+    # Return a message with the initial recommendation based on the risk level.
+    return close(
+        intent_request["sessionAttributes"],
+        "Fulfilled",
+        {
+            "contentType": "PlainText",
+            "content": "name found in regrestry"    
+        },
+    )
 
+
+
+#handle store intent
 def storeQueryFunction(intent_request, storeInfo):
 
     source = intent_request["invocationSource"]
@@ -129,59 +147,56 @@ def storeQueryFunction(intent_request, storeInfo):
         hours_type = slots["HoursType"]
         day_of_week = slots["DayOfWeek"]
 
-        for store in storeInfo:
-            if city_name in store["address"]["city"]:
-                hour_query = ""
-                if "sales" in hours_type:
-                    department = "Sales"
-                    hour_query = "salesHours"
-                elif "service" in hours_type:
-                    department = "Service"
-                    hour_query = "serviceHours"
-                elif "collision" in hours_type:
-                    department = "Collision Center"
-                    hour_query = "collisionHours"
+        #check if city is correct
+        if city_name == storeInfo['address']['city']:
+            hour_query = ""
 
-                for table in store[hour_query]:
-                    if day_of_week in table["day"]:
-                        opening = table["openTime"]
-                        closing = table["closeTime"]
+            #reformat input strings
+            day_of_week = day_of_week.upper()
+            hours_type = hours_type.lower()
 
-                        return close(
-                            intent_request["sessionAttributes"],
-                            "Fulfilled",
-                            {
-                                "contentType": "PlainText",
-                                "content": """Our {} hours are from {} to {}.
-                                """.format(department, opening, closing)
-                            }
-                        )
+            #check for which department
+            if "sales" in hours_type:
+                department = "Sales"
+                hour_query = "salesHours"
+            elif "service" in hours_type:
+                department = "Service"
+                hour_query = "serviceHours"
+            elif "collision" in hours_type:
+                department = "Collision Center"
+                hour_query = "collisionHours"
+
+            #check for day of week
+            for table in storeInfo[hour_query]:
+                if day_of_week == table["day"]:
+                    opening = table["openTime"]
+                    closing = table["closeTime"]
+
+                    return close(
+                        intent_request["sessionAttributes"],
+                        "Fulfilled",
+                        {
+                            "contentType": "PlainText",
+                            "content": """Our {} hours are from {} to {}.
+                            """.format(department, opening, closing)
+                        }
+                    )
             
-    return close(
-        intent_request["sessionAttributes"],
-        "Fulfilled",
-        {
-            "contentType": "PlainText",
-            "content": "There was an error processing your request."
-        }
-    )
+    return elicit_slot(
+                    intent_request["sessionAttributes"],
+                    intent_request["name"],
+                    slots,
+                    "DayOfWeek",
+                    "Please state the day of week."
+                )
 
 
-def validateCustomer(name, storedb):
-
-    if name in storedb:
+#validate if person exists in database
+def validateCustomer(name, person):
+   
+    if name[0] == person["firstName"] and name[1] == person["lastName"]:
         return True
     else:
-        return False
-
-
-def validateStoreHours(storeInfo):
-
-    if (salesHours in storedb and
-        serviceHours in storedb and
-        collisionHours in storeDB):
-        return True
-    else
         return False
 
 
@@ -195,7 +210,7 @@ def dispatch(intent_request):
 
     # Dispatch to bot's intent handlers
     if intent_name == "AutoNationResponse":
-        return superCoolFunction(intent_request, storeInfo, customerdb)
+        return superCoolFunction(intent_request, customerdb)
     if intent_name == "StoreInfo":
         return storeQueryFunction(intent_request, storeInfo)
 
@@ -204,7 +219,7 @@ def dispatch(intent_request):
 
 # ------------------------------main lambda handler-------------------------------
 def lambda_handler(event, context):
-   """
+    """
     Route the incoming request based on intent.
     The JSON body of the request is provided in the event slot.
     """
