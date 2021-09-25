@@ -1,247 +1,181 @@
+import logging
+import traceback
 import json
-import datetime
 
-#import jsons
-def importStoreInfo():
+debug=True
 
-    with open('storeinfo.json') as f:
-        storeInfo = json.load(f)
-    
-    with open('customerInfo.json') as a:
-        customerdb = json.load(a)
+#import json
+def importJSON(which):
 
-    return (storeInfo, customerdb)
+    if which == 'store':
+        with open('storeinfo.json') as f:
+            info = json.load(f)
 
-### Functionality Helper Functions ###
-def parse_int(n):
-    """
-    Securely converts a non-integer value to integer.
-    """
-    try:
-        return int(n)
-    except ValueError:
-        return float("nan")
-
-    ### Dialog Actions Helper Functions ###
-def get_slots(intent_request):
-    """
-    Fetch all the slots and their values from the current intent.
-    """
-    return intent_request["currentIntent"]["slots"]
-
-
-def elicit_slot(session_attributes, intent_name, slots, slot_to_elicit, message):
-    """
-    Defines an elicit slot type response.
-    """
-
-    return {
-        "sessionAttributes": session_attributes,
-        "dialogAction": {
-            "type": "ElicitSlot",
-            "intentName": intent_name,
-            "slots": slots,
-            "slotToElicit": slot_to_elicit,
-            "message": message,
-        },
-    }
-
-
-def close(session_attributes, fulfillment_state, message):
-    """
-    Defines a close slot type response.
-    """
-
-    response = {
-        "sessionAttributes": session_attributes,
-        "dialogAction": {
-            "type": "Close",
-            "fulfillmentState": fulfillment_state,
-            "message": message,
-        },
-    }
-
-    return response
-
-
-def delegate(session_attributes, slots):
-    """
-    Defines a delegate slot type response.
-    """
-
-    return {
-        "sessionAttributes": session_attributes,
-        "dialogAction": {"type": "Delegate", "slots": slots},
-    }
-
-def build_validation_result(is_valid, violated_slot, message_content):
-    """
-    Define a result message structured as Lex response.
-    """
-    if message_content is None:
-        return {"isValid": is_valid, "violatedSlot": violated_slot}
-
-    return {
-        "isValid": is_valid,
-        "violatedSlot": violated_slot,
-        "message": {"contentType": "PlainText", "content": message_content},
-    }
-
-
-#-------------------------- Super Cool Function starts here ---------------------
-# person information intent handler
-def superCoolFunction(intent_request, customerdb):
-    """
-    Performs dialog management and fulfillment for selecting a store.
-    """
-    first_name = get_slots(intent_request)["firstName"]
-    last_name = get_slots(intent_request)["lastName"]
-    #customer_id = get_slots(intent_request)["id"]
-
-    source = intent_request["invocationSource"]
-
-    #vehicles = get_slots(intent_request)["vehicles"]
-    #appointments =get_slots(intent_request)["appointments"]
-    #repair_orders = get_slots(intent_request)["repairOrders"]
-
-    if source == "DialogCodeHook":
-
-        #get slots and validate user
-        slots = get_slots(intent_request)
-        validateUserResult = validateCustomer((first_name, last_name), customerdb)
-
-        #if user is not validated
-        if not validateUserResult:
-            slots[validateUserResult["violatedSlot"]] = None
-
-            # Use the elicitSlot dialog action to re-prompt
-            # for the first violation detected.
-            return elicit_slot(
-                intent_request["sessionAttributes"],
-                intent_request["currentIntent"]["name"],
-                slots,
-                validateUserResult["violatedSlot"],
-                validateUserResult["message"])
-
-    # Return a message with the initial recommendation based on the risk level.
-    return close(
-        intent_request["sessionAttributes"],
-        "Fulfilled",
-        {
-            "contentType": "PlainText",
-            "content": "name found in regrestry"    
-        },
-    )
-
-
-
-#handle store intent
-def storeQueryFunction(intent_request, storeInfo):
-
-    source = intent_request["invocationSource"]
-
-    if source == "DialogCodeHook":
-        
-        slots = get_slots(intent_request)
-        city_name = slots["City"]
-        hours_type = slots["HoursType"]
-        day_of_week = slots["DayOfWeek"]
-
-        #check if city is correct
-        if city_name == storeInfo['address']['city']:
-            hour_query = ""
-
-            #reformat input strings
-            day_of_week = day_of_week.upper()
-            hours_type = hours_type.lower()
-
-            #check for which department
-            if "sales" in hours_type:
-                department = "Sales"
-                hour_query = "salesHours"
-            elif "service" in hours_type:
-                department = "Service"
-                hour_query = "serviceHours"
-            elif "collision" in hours_type:
-                department = "Collision Center"
-                hour_query = "collisionHours"
-
-            #check for day of week
-            for table in storeInfo[hour_query]:
-                if day_of_week == table["day"]:
-                    opening = table["openTime"]
-                    closing = table["closeTime"]
-
-                    return close(
-                        intent_request["sessionAttributes"],
-                        "Fulfilled",
-                        {
-                            "contentType": "PlainText",
-                            "content": """Our {} hours are from {} to {}.
-                            """.format(department, opening, closing)
-                        }
-                    )
-            
-    return elicit_slot(
-                    intent_request["sessionAttributes"],
-                    intent_request["name"],
-                    slots,
-                    "DayOfWeek",
-                    "Please state the day of week."
-                )
-
-
-#validate if person exists in database
-def validateCustomer(name, person):
-   
-    if name[0] == person["firstName"] and name[1] == person["lastName"]:
-        return True
     else:
-        return False
+        with open('customerInfo.json') as a:
+            info = json.load(a)
+    
+    return info
 
+#store query
+def storeQueryFunction(intent_request):
+
+    #import store info
+    storeInfo = importJSON('store')
+
+    #get session attributes
+    session_attributes = get_session_attributes(intent_request)
+
+    #get slot values
+    city_name = get_slot(intent_request,'City')
+    hours_type =  get_slot(intent_request,'HoursType')
+    day_of_week = get_slot(intent_request,'DayOfWeek')
+
+    reply = ""
+
+    #check if city is correct
+    if city_name == storeInfo['address']['city']:
+        hour_query = ""
+
+        #reformat input strings
+        day_of_week = day_of_week.upper()
+        hours_type = hours_type.lower()
+
+        department, hour_query = checkDepartment(hours_type)
+
+        #check for day of week
+        for table in storeInfo[hour_query]:
+            if day_of_week == table["day"]:
+                opening = table["openTime"]
+                closing = table["closeTime"]
+
+        reply = """Our {} hours are from {} to {}.
+                            """.format(department, opening, closing)
+
+    else:
+
+        reply = """I'm sorry. We currently have no stores in {}.  
+        We are currently located at {}.""".format(city_name, storeInfo['address']['city'])
+
+    #reply message
+    message =  {
+                'contentType': 'PlainText',
+                'content': reply
+                }
+    
+    #fulffiled
+    fulfillment_state = "Fulfilled"
+
+    return close(intent_request, session_attributes, fulfillment_state, message)
+
+
+#check for which department
+def checkDepartment(hours_type):
+    if "sales" in hours_type:
+        department = "Sales"
+        hour_query = "salesHours"
+    elif "service" in hours_type:
+        department = "Service"
+        hour_query = "serviceHours"
+    elif "collision" in hours_type:
+        department = "Collision Center"
+        hour_query = "collisionHours"
+
+    return department, hour_query
 
 #------------------------ Intents Dispatcher----------------------------------#
 def dispatch(intent_request):
-    """
-    Called when the user specifies an intent for this bot.
-    """
-    storeInfo, customerdb = importStoreInfo()
-    intent_name = intent_request["currentIntent"]["name"]
+    try:
+        intent_name = intent_request['sessionState']['intent']['name']
 
-    # Dispatch to bot's intent handlers
-    if intent_name == "AutoNationResponse":
-        return superCoolFunction(intent_request, customerdb)
-    if intent_name == "StoreInfo":
-        return storeQueryFunction(intent_request, storeInfo)
-
-    raise Exception("Intent with name " + intent_name + " not supported")
+        # Dispatch to your bot's intent handlers
+        if intent_name == 'StoreInfo':
+            return storeQueryFunction(intent_request)
+    
+    except Exception as ex:
+        error = traceback.format_exc()
+        print(error)
+        return fail(intent_request,error)
 
 
-# ------------------------------main lambda handler-------------------------------
+#entry point of lambda
 def lambda_handler(event, context):
-    """
-    Route the incoming request based on intent.
-    The JSON body of the request is provided in the event slot.
-    """
-    return dispatch(event)
+    response = dispatch(event)
+    return response
 
-"""
-def timeCalculator(opening, closing):
+# builds response to end the dialog
+def close(intent_request, session_attributes, fulfillment_state, message):
+    intent_request['sessionState']['intent']['state'] = fulfillment_state
+    return {
+        'sessionState': {
+            'sessionAttributes': session_attributes,
+            'dialogAction': {
+                'type': 'Close'
+            },
+            'intent': intent_request['sessionState']['intent']
+        },
+        'messages': [message],
+        'sessionId': intent_request['sessionId'],
+        'requestAttributes': intent_request['requestAttributes'] if 'requestAttributes' in intent_request else None
+    }   
+# on error, return nice message to bot
+def fail(intent_request,error):
+    #don't share the full eerror in production code, it's not good to give full traceback data to users
+    error = error if debug else ''
+    intent_name = intent_request['sessionState']['intent']['name']
+    message = {
+                'contentType': 'PlainText',
+                'content': f"Oops... I guess I ran into an error I wasn't expecting... Sorry about that. My dev should probably look in the logs.\n {error}"
+                }
+    fulfillment_state = "Fulfilled"
+    return close(intent_request, get_session_attributes(intent_request), fulfillment_state, message) 
 
-    current_time = datetime.now()
-    open_time = current_time
-    open_time.hour = opening.split(":")[0]
-    open_time.minute = opening.split(":")[1]
-    close_time = current_time
-    close_time.hour = closing.split(":")[0]
-    close_time.minute = closing.split(":")[1]
+#gets a map of the session attributes
+def get_session_attributes(intent_request):
+    sessionState = intent_request['sessionState']
+    if 'sessionAttributes' in sessionState:
+        return sessionState['sessionAttributes']
 
-    if current_time > open_time and current_time < close_time:
-        return True
-    else
-        return False
-"""
+    return {}
 
+#util method to get the slots fromt he request
+def get_slots(intent_request):
+    return intent_request['sessionState']['intent']['slots']
 
-def __init__():
-    importStoreInfo()
+#util method to get a slot's value
+def get_slot(intent_request, slotName):
+    slots = get_slots(intent_request)
+    if slots is not None and slotName in slots and slots[slotName] is not None and 'interpretedValue' in slots[slotName]['value']:
+        return slots[slotName]['value']['interpretedValue']
+    else:
+        return None
+
+# builds response to tell the bot you want to trigger another intent (use to switch the context)
+def elicit_intent(intent_request, session_attributes, message):
+    return {
+        'sessionState': {
+            'dialogAction': {
+                'type': 'ElicitIntent'
+            },
+            'sessionAttributes': session_attributes
+        },
+        'messages': [ message ] if message != None else None,
+        'requestAttributes': intent_request['requestAttributes'] if 'requestAttributes' in intent_request else None
+    }
+
+# builds response to tell the bot you need to get the value of a particular slot
+def elicit_slot(intent_request, session_attributes,slot_to_elicit, message):
+    intent_request['sessionState']['intent']['state'] = 'InProgress'
+    return {
+        'sessionState': {
+            'sessionAttributes': session_attributes,
+            'dialogAction': {
+                'type': 'ElicitSlot',
+                'slotToElicit': slot_to_elicit
+            },
+            'intent': intent_request['sessionState']['intent']
+        },
+        'messages': [message],
+        'sessionId': intent_request['sessionId'],
+        'requestAttributes': intent_request['requestAttributes'] if 'requestAttributes' in intent_request else None
+    }
