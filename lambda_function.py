@@ -91,7 +91,6 @@ def checkStoreInfo(day, dep, storeInfo):
         sunBool = False
 
 
-<<<<<<< HEAD
     if source == "DialogCodeHook":
         
         slots = get_slots(intent_request)
@@ -144,7 +143,6 @@ def checkStoreInfo(day, dep, storeInfo):
         "Please state the city."
     )
 
-=======
         for table in storeInfo[dep_query][5:]:
             
             #check if department is open saturday
@@ -173,7 +171,6 @@ def checkStoreInfo(day, dep, storeInfo):
         if day == table["day"]:
             opening = table["openTime"]
             closing = table["closeTime"]
->>>>>>> 745adf6ca934f8d5430cff978a94849744a8e49a
 
             return "Our {} hours are from {} to {}.".format(department, reformatTime(opening), reformatTime(closing))
 
@@ -187,14 +184,12 @@ def dispatch(intent_request):
     try:
         intent_name = intent_request['sessionState']['intent']['name']
 
-<<<<<<< HEAD
     if (salesHours in storedb and
         serviceHours in storedb and
         collisionHours in storedb):
         return True
     else
         return False
-=======
         # Dispatch to your bot's intent handlers
         if intent_name == 'StoreInfo':
             return storeQueryFunction(intent_request)
@@ -203,7 +198,6 @@ def dispatch(intent_request):
         error = traceback.format_exc()
         print(error)
         return fail(intent_request,error)
->>>>>>> 745adf6ca934f8d5430cff978a94849744a8e49a
 
 
 #entry point of lambda
