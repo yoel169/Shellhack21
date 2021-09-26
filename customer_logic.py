@@ -80,6 +80,44 @@ def customerQueryFunction(intent_request):
         message
     )
 
+def customerAppointmentFactory(intent_request):
+
+    session_attributes = get_session_attributes(intent_request)
+
+    date = x
+    time = y
+
+    make = slots["carMake"]
+    model = slots["carModel"]
+    vin = getVIN(current_customer, make, model)
+
+    if vin == "not found":
+        message = {
+            "messageType": "PlainText",
+            "message": "Could not find your vehicle."
+        }
+        return elicit_slot(
+            intent_request,
+            session_attributes,
+            "vehicle info",
+            message
+        )
+    return close(
+        intent_requestm
+        session_attributes,
+        "Completed",
+        {
+            "messageType": "PlainText",
+            "message": "Your appointment for your {} {} has been confirmed for {} on {}.".format (
+                make,
+                model,
+                time,
+                date
+            )
+        }
+    )
+
+
 
 
 #Take a customer ID from the intent_request
@@ -170,7 +208,7 @@ def checkAppointmentStatus(customer, vin):
     current_time = datetime.utcnow()
 
     for appointment in customer["appointments"]:
-        if appointment["vehicleID"] == vin
+        if appointment["vehicleID"] == vin:
             appointment_time = dateutil.parser.isoparse(appointment["appointmentDateTime"])
         if current_time < appointment_time:
             appointment_list.add("Appointment on {1:%B} {1:%d} at {1:%I}:{1:%M} {1:%p}.\n".format(
