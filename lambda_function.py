@@ -1,3 +1,4 @@
+from Shellhack21.customer_logic import customerQueryFunction
 import logging
 import traceback
 import json
@@ -51,7 +52,6 @@ def storeQueryFunction(intent_request):
     #return reply
     return close(intent_request, session_attributes, fulfillment_state, message)
 
-
 #check for store hours
 def checkStoreInfo(day, dep, storeInfo):
 
@@ -89,59 +89,6 @@ def checkStoreInfo(day, dep, storeInfo):
         
         salBool = False
         sunBool = False
-
-
-    if source == "DialogCodeHook":
-        
-        slots = get_slots(intent_request)
-        city_name = slots["City"]
-        hours_type = slots["HoursType"]
-        day_of_week = slots["DayOfWeek"]
-
-        for store in storeInfo:
-            if city_name in store["address"]["city"]:
-                hour_query = ""
-                if "sales" in hours_type:
-                    department = "Sales"
-                    hour_query = "salesHours"
-                elif "service" in hours_type:
-                    department = "Service"
-                    hour_query = "serviceHours"
-                elif "collision" in hours_type:
-                    department = "Collision Center"
-                    hour_query = "collisionHours"
-
-                for table in store[hour_query]:
-                    if day_of_week in table["day"]:
-                        opening = table["openTime"]
-                        closing = table["closeTime"]
-
-                        return close(
-                            intent_request["sessionAttributes"],
-                            "Fulfilled",
-                            {
-                                "contentType": "PlainText",
-                                "content": """Our {} hours are from {} to {}.
-                                """.format(department, opening, closing)
-                            }
-                        )
-                
-                return elicit_slot(
-                    intent_request["sessionAttributes"],
-                    intent_request["name"],
-                    slots,
-                    "DayOfWeek",
-                    "Please state the day of week."
-                )
-
-            
-    return elicit_slot(
-        intent_request["sessionAttributes"],
-        intent_request["name"],
-        slots,
-        "City",
-        "Please state the city."
-    )
 
         for table in storeInfo[dep_query][5:]:
             
@@ -184,15 +131,11 @@ def dispatch(intent_request):
     try:
         intent_name = intent_request['sessionState']['intent']['name']
 
-    if (salesHours in storedb and
-        serviceHours in storedb and
-        collisionHours in storedb):
-        return True
-    else
-        return False
         # Dispatch to your bot's intent handlers
         if intent_name == 'StoreInfo':
             return storeQueryFunction(intent_request)
+        elif intent_name == 'CustomerInfo':
+            return customerQueryFunction(intent_request)
     
     except Exception as ex:
         error = traceback.format_exc()

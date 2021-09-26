@@ -170,8 +170,8 @@ def checkAppointmentStatus(customer, vin):
     current_time = datetime.utcnow()
 
     for appointment in customer["appointments"]:
-        if appointment["vehicleID"] == vin
-        appointment_time = dateutil.parser.isoparse(appointment["appointmentDateTime"])
+        if appointment["vehicleID"] == vin:
+            appointment_time = dateutil.parser.isoparse(appointment["appointmentDateTime"])
         if current_time < appointment_time:
             appointment_list.add("Appointment on {1:%B} {1:%d} at {1:%I}:{1:%M} {1:%p}.\n".format(
                 getCarInfo(vin),
