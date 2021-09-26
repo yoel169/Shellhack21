@@ -2,13 +2,17 @@
 these are lambda functions for running along with aws lex v2. lex v2 lets you build smart custom messaging bots. the main file that will run is lambda_function.py
 
 
-These are all the intents used with this project
+These are all the intents used with this project. All slots used are required
 
 ![inetents](https://user-images.githubusercontent.com/64227638/134813940-6126cc57-1ca2-4da4-a05e-ffd725ecc724.JPG)
 
 This is the configuration for CustomerInfo where you can get appointments and repair orders of customers
 ![lex2](https://user-images.githubusercontent.com/64227638/134813967-7c18fdf5-2312-4eb0-bbe1-24ca1767fd0c.JPG)
 ![slots1](https://user-images.githubusercontent.com/64227638/134813969-ed824741-0fd3-4b09-abc8-913a64c34144.JPG)
+
+This is the configuration for MakeAppointments where user can make appointments.
+![image](https://user-images.githubusercontent.com/64227638/134814352-60ff40ca-66eb-4d18-9aa1-9a2e38e3df85.png)
+![image](https://user-images.githubusercontent.com/64227638/134814359-d33e8ced-9076-4315-97d3-57f360f71728.png)
 
 This is the configuration for StoreInfo where you can get all the store information except hours
 ![lex3](https://user-images.githubusercontent.com/64227638/134813968-5a2d81c1-b768-404f-942e-496a32b25b6b.JPG)
