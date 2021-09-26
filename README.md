@@ -6,7 +6,7 @@ These are all the intents used with this project
 
 ![inetents](https://user-images.githubusercontent.com/64227638/134813940-6126cc57-1ca2-4da4-a05e-ffd725ecc724.JPG)
 
-This is the configuration for CustomerInfo where you can get appoints and repair orders of customers
+This is the configuration for CustomerInfo where you can get appointments and repair orders of customers
 ![lex2](https://user-images.githubusercontent.com/64227638/134813967-7c18fdf5-2312-4eb0-bbe1-24ca1767fd0c.JPG)
 ![slots1](https://user-images.githubusercontent.com/64227638/134813969-ed824741-0fd3-4b09-abc8-913a64c34144.JPG)
 
