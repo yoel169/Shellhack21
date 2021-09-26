@@ -1,0 +1,95 @@
+{
+    "customerId":"QRXY1427",
+    "firstName":"Lex",
+    "lastName": "Luthor",
+    "vehicles":[
+        {
+            "vehicleId": "1C4RJKBG3M8107027",
+            "year": 2021,
+            "make": "JEEP",
+            "model": "Grand Cherokee",
+            "mileage": 1250
+        },
+        {
+            "vehicleId": "1C6RR7LT7JS179033",
+            "year": 2018,
+            "make": "RAM",
+            "model": "1500",
+            "mileage": 31041
+        },
+        {
+            "vehicleId": "2C4RC1EG9JR187336",
+            "year": 2018,
+            "make": "CHRYSLER",
+            "model": "Pacifica",
+            "mileage": 28768
+        }
+    ],
+    "appointments":[
+        {
+            "appointmentId": "APPT12345",
+            "appointmentDateTime": "2021-10-21T16:00:00Z",
+            "vehicleId": "1C4RJKBG3M8107027",
+            "storeId":"2667",
+            "reasons": [
+                "oilChange",
+                "tireRotation"
+            ]
+        },
+        {
+            "appointmentId": "APPT654321",
+            "appointmentDateTime": "2021-11-24T17:30:00Z",
+            "vehicleId": "1C6RR7LT7JS179033",
+            "storeId":"2667",
+            "reasons": [
+                "oilChange",
+                "brakes"
+            ]
+        }
+
+    ],
+    "repairOrders":[
+        {
+            "repairOrderId":"RO1234567",
+            "vehicleId":"2C4RC1EG9JR187336",
+            "storeId":"2667",
+            "status": "OPEN",
+            "openDateTime":"2020-09-17T16:00:00Z",
+            "closeDateTime":null,
+            "lineItems":[
+                {"name":"brakes","partNumber":"b123","quantity": 1 ,"pricePerUnit": 232.50},
+                {"name":"oil","partNumber":"o234","quantity": 1 ,"pricePerUnit": 35.99},
+                {"name":"laborHours","partNumber":null,"quantity": 4.5 ,"pricePerUnit": 80.00}
+            ]
+
+        },
+        {
+            "repairOrderId":"RO4567890",
+            "vehicleId":"1C4RJKBG3M8107027",
+            "storeId":"2667",
+            "status": "COMPLETED",
+            "openDateTime":"2020-9-16T18:00:00Z",
+            "closeDateTime":null,
+            "lineItems":[
+                {"name":"waterPump","partNumber":"t543","quantity": 1 ,"pricePerUnit": 149.99},
+                {"name":"laborHours","partNumber":null,"quantity": 10 ,"pricePerUnit": 80.00}
+            ]
+
+        },
+        {
+            "repairOrderId":"RO2345678",
+            "vehicleId":"1C4RJKBG3M8107027",
+            "storeId":"2667",
+            "status": "CLOSED",
+            "openDateTime":"2020-01-10T18:00:00Z",
+            "closeDateTime":"2020-01-10T19:00:00Z",
+            "lineItems":[
+                {"name":"oil","partNumber":"o234","quantity": 2 ,"pricePerUnit": 35.99},
+                {"name":"laborHours","partNumber":null,"quantity": 1 ,"pricePerUnit": 80.00}
+            ]
+
+        }
+    ]
+
+
+}
