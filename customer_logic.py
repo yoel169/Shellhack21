@@ -47,6 +47,8 @@ def getCustomerID(intent_request):
     
     return null
 
+
+#Given a VIN, look up the make and model
 def getCarInfo(vin):
 
     for customer in customerInfo:
@@ -98,7 +100,7 @@ def checkAppointmentStatus(customer, vin):
         return "No appointments could be found."
 
         
-
+#Alias for dateutil.parser.isoparse()
 def readTime(time_string):
 
     return dateutil.parser.isoparse(time_string)
@@ -117,7 +119,7 @@ def readTime(time_string):
     return datetime_obj
     """
 
-
+#Given a customer and VIN, check if any repairs are ready.
 def checkRepairStatus(customer, vin):
 
     for order in customer["repairOrders"]:
@@ -131,7 +133,7 @@ def checkRepairStatus(customer, vin):
                     getCarInfo(vin)
                 )
 
-    return "No repairs could be found for your {}".format(
+    return "No current repairs could be found for your {}".format(
         getCarInfo(vin)
     )
 

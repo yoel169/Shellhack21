@@ -116,6 +116,7 @@ def customerQueryFunction(intent_request):
     
     for customer in matches:
         if last_name == customer["lastName"]:
+            current_customer = customer
             customer_ID = customer["customerID"]
             last_name_found = True
             break
@@ -131,11 +132,21 @@ def customerQueryFunction(intent_request):
     query_type = slots["queryType"]
     make = slots["carMake"]
     model = slots["carModel"]
+    vin = getVIN(current_customer, make, model)
 
     if query_type == "appointment":
-        return 
+        message = checkRepairStatus(current_customer, vin)
     elif query_type == "repair":
-        return 
+        message = checkRepairStatus(current_customer, vin)
+    else:
+        #Edge case fails
+        return fail(intent_request, "Invalid query type")
+    return close(
+        intent_request,
+        session_attributes,
+        "Completed",
+        message
+    )
 
 
 
@@ -181,7 +192,7 @@ def checkRepairStatus(customer, vin):
     for order in customer["repairOrders"]:
         if vin == order["vehicleID"]:
             if order["status"] == "COMPLETED":
-                messagge = "Your repair for your {} has been completed".format(
+                message = "Your repair for your {} has been completed".format(
                     getCarInfo(vin)
                 )
             elif order["status"] == "OPEN":
@@ -193,7 +204,31 @@ def checkRepairStatus(customer, vin):
         getCarInfo(vin)
     )
 
+#Given a customer and car, check if said car has any upcoming appointments
+def checkAppointmentStatus(customer, vin):
 
+    appointment_list = []
+    appointment_count = 0
+
+    current_time = datetime.utcnow()
+
+    for appointment in customer["appointments"]:
+        if appointment["vehicleID"] == vin
+        appointment_time = readTime(appointment["appointmentDateTime"])
+        if current_time < appointment_time:
+            appointment_list.add("Appointment on {1:%B} {1:%d} at {1:%I}:{1:%M} {1:%p}.\n".format(
+                getCarInfo(vin),
+                appointment_time
+            ))
+            appointment_count += 1
+
+    if appointment_count > 0:
+        response_string = "You have {0} upcoming appointments:\n"
+        for appointment in appointment_list:
+            response_string.append(appointment)
+        return response_string
+    else:
+        return "No appointments could be found."
 
 
 #------------------------ Intents Dispatcher----------------------------------#
