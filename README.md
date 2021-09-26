@@ -1,7 +1,9 @@
 # Shellhack21
 these are lambda functions for running along with aws lex v2. lex v2 lets you build smart custom messaging bots. the main file that will run is lambda_function.py
 
-These are all the intents used with this project.
+
+These are all the intents used with this project
+
 ![inetents](https://user-images.githubusercontent.com/64227638/134813940-6126cc57-1ca2-4da4-a05e-ffd725ecc724.JPG)
 
 This is the configuration for CustomerInfo where you can get appoints and repair orders of customers
