@@ -1,6 +1,7 @@
+from emojiesUnicode import getEmojie
 import datetime
 import re
-from lambdaUtilityFunctions import close,get_slot,get_session_attributes, importJSON
+from lambdaUtilityFunctions import close,get_slot,get_session_attributes, importJSON, fail
 
 def customerQueryFunction(intent_request):
     
@@ -23,7 +24,7 @@ def customerQueryFunction(intent_request):
         
     if not first_name_found:
 
-        reply = "Your first name was not in our database."
+        reply = getEmojie("cross") + "Your first name was not in our database."
         message =  {
                     'contentType': 'PlainText',
                     'content': reply
@@ -39,7 +40,7 @@ def customerQueryFunction(intent_request):
 
     if not last_name_found:
 
-        reply = "Your last name was not in our database."
+        reply = getEmojie("cross") + "Your last name was not in our database."
         message =  {
                     'contentType': 'PlainText',
                     'content': reply
@@ -56,7 +57,7 @@ def customerQueryFunction(intent_request):
     #checking if a car was found
     if vin == "not found":
 
-        reply = "There was no car found for {} {}.".format(make, model)
+        reply = getEmojie("cross") + "There was no car found for {} {}.".format(make, model)
         message =  {
                     'contentType': 'PlainText',
                     'content': reply
@@ -66,10 +67,11 @@ def customerQueryFunction(intent_request):
 
     else:
 
+        reply = getEmojie("mechanic")
         if query_type == "appointment":
-            reply = checkAppointmentStatus(current_customer, vin)
+            reply += checkAppointmentStatus(current_customer, vin)
         elif query_type == "repair":
-            reply = checkRepairStatus(current_customer, vin)
+            reply +=  getEmojie("wrench") + checkRepairStatus(current_customer, vin)
         else:
             #Edge case fails
             return fail(intent_request, "Invalid query type")
@@ -164,15 +166,15 @@ def checkRepairStatus(customer, vin):
     for order in customer["repairOrders"]:
         if vin == order["vehicleId"]:
             if order["status"] == "COMPLETED":
-                return "Your repair for your {} has been completed".format(
+                return getEmojie("check") + "Your repair for your {} has been completed".format(
                     getCarInfo(vin, customer)
                 )
             elif order["status"] == "OPEN":
-                return "Your repair for your {} is currently in progress".format(
+                return getEmojie("!") + "Your repair for your {} is currently in progress".format(
                     getCarInfo(vin, customer)
                 )
 
-    return "No current repairs could be found for your {}".format(
+    return getEmojie("cross") + "No current repairs could be found for your {}".format(
         getCarInfo(vin, customer)
     )
 
@@ -193,19 +195,19 @@ def checkAppointmentStatus(customer, vin):
             appointment_time = appointment["appointmentDateTime"]
 
             #if current_time < appointment_time:
-            appointment_list.append("Appointment on vehicle '{}' at {}.\n".format(
+            appointment_list.append("Appointment on {} at {}.\n".format(
                 getCarInfo(vin, customer),
                 appointment_time
             ))
             appointment_count += 1
 
     if appointment_count > 0:
-        response_string = "You have {0} upcoming appointments:\n".format(appointment_count)
+        response_string = getEmojie("calandar") + getEmojie('car')+ "You have {0} upcoming appointments:\n".format(appointment_count)
         for appointment in appointment_list:
             response_string += appointment
         return response_string
     else:
-        return "No appointments could be found."
+        return getEmojie("cross") + "No appointments could be found."
 
 #Converts ISO time string to datetime object
 def readTime(time_string):
@@ -221,3 +223,41 @@ def readTime(time_string):
     datetime_obj = datetime.datetime(year, month, day, hour, minute, second)
 
     return datetime_obj
+
+#book customer appointment
+def customerAppointmentFactory(intent_request):
+
+    session_attributes = get_session_attributes(intent_request)
+    #customer = importJSON('customer')
+
+    date = get_slot(intent_request,"appDate")
+    time = get_slot(intent_request,"appTime")
+
+    make = get_slot(intent_request,"carMake")
+    model = get_slot(intent_request,"carModel")
+
+    #vin = getVIN(customer, make, model)
+
+    # if vin == "not found":
+
+    #     message = {
+    #         "contentType": "PlainText",
+    #         "content": getEmojie("cross") + "Could not find your vehicle."
+    # }
+
+    #     return close(intent_request, session_attributes,
+    #     "Fulfilled",message
+    #     )
+
+    #fulffiled
+    fulfillment_state = "Fulfilled"
+
+    appointment =  getEmojie("calandar") +  getEmojie("check") + "Your appointment for your {} {} has been confirmed for {} on {}.".format (
+                make,model,time,date)
+
+    message =  {
+                'contentType': 'PlainText',
+                'content': appointment
+                }
+
+    return close(intent_request, session_attributes, fulfillment_state, message)

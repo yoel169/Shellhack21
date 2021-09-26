@@ -1,10 +1,12 @@
-from customer_logic import customerQueryFunction
+from customer_logic import customerQueryFunction, customerAppointmentFactory
 from storeInfo import storeInfoQueryFunction
 import traceback
 from storeHours import storeQueryFunction
 from lambdaUtilityFunctions import fail
 
-#------------------------ Intents Dispatcher----------------------------------#
+#THIS WAS MADE FOR AWS LEX V2. IS NOT COMPATIBLE WITH LEX V1
+#BY YOEL ROBAINA, MAURICIO SILVA, JONATHAN MONTESINOS, JORDAN X
+
 def dispatch(intent_request):
     try:
         intent_name = intent_request['sessionState']['intent']['name']
@@ -16,8 +18,9 @@ def dispatch(intent_request):
              return customerQueryFunction(intent_request)
         elif intent_name == 'StoreInfo':
              return storeInfoQueryFunction(intent_request)
+        elif intent_name == 'MakeAppointment':
+            return  customerAppointmentFactory(intent_request)
             
-
     except Exception as ex:
         error = traceback.format_exc()
         print(error)

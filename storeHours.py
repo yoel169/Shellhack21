@@ -1,5 +1,6 @@
 from lambdaUtilityFunctions import close,get_slot,get_session_attributes, importJSON
 from datetime import datetime
+from emojiesUnicode import getEmojie
 
 #store query
 def storeQueryFunction(intent_request):
@@ -20,7 +21,7 @@ def storeQueryFunction(intent_request):
     department = department.lower()
 
     #check for store hours based on client input
-    storeHours = checkStoreInfo(day_of_week, department, storeInfo)
+    storeHours =  getEmojie('penguin') + getEmojie('watch') + " " + checkStoreInfo(day_of_week, department, storeInfo)
 
     #insert store hours
     message =  {
@@ -39,21 +40,21 @@ def checkStoreInfo(day, dep, storeInfo):
 
     #check which department
     if "sales" in dep:
-        department = "Sales"
+        department =  getEmojie('cash')+"Sales"
         dep_query = "salesHours"
     elif "service" in dep:
-        department = "Service"
+        department = getEmojie("wrench")+"Service"
         dep_query = "serviceHours"
     elif "collision" in dep:
-        department = "Collision Center"
+        department = getEmojie("collision") + " Collision Center"
         dep_query = "collisionHours"
     else:
-        return "Could not find that department. Our departments are: Sales, Service, and Collision."
+        return getEmojie('cross') + "Could not find that department. Our departments are: " + getEmojie('cash') +"Sales, "+getEmojie("wrench")+"Service, and " + getEmojie("collision") + "Collision."
 
     #check if user actually checked for a possible day
     possibleDays = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY','WEEKDAY','WEEKEND'] 
     if not day in possibleDays:
-        return "Can not find hours for {}.".format(day)
+        return getEmojie("cross") + "Can not find hours for {}.".format(day)
 
     #check if user is asking for weekday
     if day == "WEEKDAY":

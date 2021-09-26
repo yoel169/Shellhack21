@@ -1,4 +1,5 @@
 from lambdaUtilityFunctions import close,get_slot,get_session_attributes, importJSON
+from emojiesUnicode import getEmojie
 
 def storeInfoQueryFunction(intent_request):
 
@@ -31,19 +32,32 @@ def getStoreInfo(queryT):
     #get store info
     info = storeInfo[queryT]
 
-    response = ""
+    response = getEmojie('penguin') + " "
 
     #check if info is a dictionary
     if(type(info) == dict):
+
+        if queryT == 'address':
+            response += getEmojie('card') + " "
+        else:
+            response += getEmojie('watch') + " "
+
         for key, value in info.items():
             response+= "{}: {}, \n".format(key, value)
-            
+
     elif(type(info) == list):
         for value in info:
             response+= "{},".format(value)
 
     else:
-        response = "{} is {}".format(queryT, info)
+        if queryT == 'faxNumber':
+            response += getEmojie('fax') + " "
+        elif queryT == 'phoneNumber' or  queryT =='servicephoneNumber':
+             response += getEmojie('phone') + " "
+        elif queryT == 'webAddress':
+            response += getEmojie('globe') + " "
+
+        response += "{} is {}".format(queryT, info)
     
     return response
 
